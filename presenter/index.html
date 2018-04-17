@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <style>
+      body {
+        height: 99vh;
+        /* clip-path: circle(60px at center); */
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // You can also require other files to run in this process
+      const { init } = require('./renderer.js')
+      init();
+    </script>
+  </body>
+</html>
