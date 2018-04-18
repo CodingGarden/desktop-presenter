@@ -5,12 +5,17 @@
     <title>Hello World!</title>
     <style>
       body {
-        height: 99vh;
-        /* clip-path: circle(60px at center); */
+        height: 100vh;
+        margin: 0px;
+      }
+      canvas {
+        background: transparent;
       }
     </style>
   </head>
   <body>
+    <canvas>
+    </canvas>
     <script>
       // You can also require other files to run in this process
       const { init } = require('./renderer.js')

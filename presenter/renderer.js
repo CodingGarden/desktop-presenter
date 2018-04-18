@@ -1,51 +1,65 @@
 const { remote, screen } = require('electron');
-let mouseCircle;
+const mouse = require('osx-mouse')();
 
-function setMouseLocation(location) {
-  mouseCircle.style.top = (location.y - 100) + 'px';
-  mouseCircle.style.left = (location.x - 100) + 'px';
+const mainWindow = remote.getCurrentWindow();
+const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+const menuBarHeight = screen.getMenuBarHeight();
+
+let activeHighlight = true;
+
+const canvas = document.querySelector('canvas');
+canvas.setAttribute('height', height);
+canvas.setAttribute('width', width);
+const context = canvas.getContext('2d');
+
+function clear() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function setMouseLocation() {
+  const { x, y } = screen.getCursorScreenPoint();
+
+  clear();
+  context.fillStyle = 'rgba(0,0,0,0.9)';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.save();
+  context.globalCompositeOperation = 'destination-out';
+  context.translate(x-x*20, 0);
+  context.scale(20, 1);
+  context.beginPath();
+  context.arc(x, y - menuBarHeight, 30, 0, 2 * Math.PI, false);
+  context.fill();
+  context.restore();
 }
 
 function init() {
-  mouseCircle = document.createElement('div');
-  mouseCircle.style.position = 'absolute';
-  mouseCircle.style.background = 'yellow';
-  mouseCircle.style.borderRadius = '50%';
-  mouseCircle.style.opacity = '0.5';
-  mouseCircle.style.width = '200px';
-  mouseCircle.style.height = '200px';
-  const location = screen.getCursorScreenPoint();
-  setMouseLocation(location);
+  setMouseLocation();
 
-  document.body.appendChild(mouseCircle);
+  mouse.on('move', () => {
+    if (activeHighlight) {
+      setMouseLocation();
+    }
+  });
 
-  document.body.addEventListener('mousemove', setCircle);
+  mouse.on('left-down', () => {
+    clear();
+  });
 
-  function setCircle(event) {
-    setMouseLocation({
-      x: event.clientX,
-      y: event.clientY
-    });
-  }
+  mouse.on('left-up', (x, y) => {
+    if (activeHighlight) {
+      setMouseLocation();
+    }
+  });
 }
 
-let isVisible = true;
-
 function toggleMouseHighlight() {
-  console.log(mouseCircle);
-  const mainWindow = remote.getCurrentWindow();
-  if(isVisible) {
-    mainWindow.setIgnoreMouseEvents(true);
-    isVisible = false;
-    mouseCircle.style.display = 'none';
+  if(activeHighlight) {
+    activeHighlight = false;
+    clear();
   } else {
-    mainWindow.focus();
-    mainWindow.setIgnoreMouseEvents(false);
-    isVisible = true;
-    mouseCircle.style.display = '';
+    activeHighlight = true;
+    setMouseLocation();
   }
-  const location = screen.getCursorScreenPoint();
-  setMouseLocation(location);
 }
 
 window.toggleMouseHighlight = toggleMouseHighlight;
