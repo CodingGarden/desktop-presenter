@@ -26,6 +26,7 @@ function setMouseLocation() {
   context.globalCompositeOperation = 'destination-out';
   context.translate(x-x*20, 0);
   context.scale(20, 1);
+  context.filter = "blur(10px)";
   context.beginPath();
   context.arc(x, y - menuBarHeight, 30, 0, 2 * Math.PI, false);
   context.fill();
