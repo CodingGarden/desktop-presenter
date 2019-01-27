@@ -3,7 +3,7 @@ const url = require('url');
 const electron = require('electron');
 const { app, BrowserWindow, globalShortcut, Menu } = electron;
 
-
+app.disableHardwareAcceleration();
 app.dock.hide();
 
 let mainWindow;
@@ -26,6 +26,7 @@ function createWindow () {
   }));
 
   mainWindow.setIgnoreMouseEvents(true);
+  // mainWindow.toggleDevTools();
 
   mainWindow.on('closed', function () {
     mainWindow = null;
